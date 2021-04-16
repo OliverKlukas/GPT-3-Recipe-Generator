@@ -10,6 +10,7 @@
 import 'package:flutter/material.dart';
 
 import 'chat.dart';
+import 'discovery.dart';
 
 void main() => runApp(const MyApp());
 
@@ -41,11 +42,8 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   int _selectedIndex = 0;
   static const TextStyle optionStyle =
   TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
-  static const List<Widget> _widgetOptions = <Widget>[
-    Text(
-      'Index 0: Home',
-      style: optionStyle,
-    ),
+  static List<Widget> _widgetOptions = <Widget>[
+    DiscoveryPage(),
     Text(
       'Index 1: Business',
       style: optionStyle,
@@ -63,7 +61,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('BottomNavigationBar Sample'),
+        title: const Text('Recipe Generator'),
       ),
       body: Center(
         child: _widgetOptions.elementAt(_selectedIndex),

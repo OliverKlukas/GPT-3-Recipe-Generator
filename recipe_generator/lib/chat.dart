@@ -8,26 +8,6 @@ import 'package:http/http.dart' as http;
 // Run your app with 'flutter run --dart-define=OPENAI_KEY=YOUR_API_KEY_HERE
 const OPENAI_KEY = String.fromEnvironment("OPENAI_KEY");
 
-class ChatPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    /// Global widget for our app
-    return Container(
-      title: 'Recipe Generator',
-      debugShowCheckedModeBanner: false,
-
-      /// Our custom theme colors
-      theme: ThemeData(
-        primaryColor: Colors.blue,
-        scaffoldBackgroundColor: Colors.white70,
-      ),
-
-      /// The main page
-      home: MyHomePage(title: 'Recipe Generator'),
-    );
-  }
-}
-
 /// Dataclass to store a single message,
 /// either from you or the AI
 class Message {
@@ -38,19 +18,12 @@ class Message {
 }
 
 /// Main page of our app, containing a scrollable chat history and a text field
-class MyHomePage extends StatefulWidget {
-  final String title;
-  MyHomePage({Key key, this.title}) : super(key: key);
-
+class ChatPage extends StatefulWidget {
   @override
-  _MyHomePageState createState() => _MyHomePageState();
-
-  static _MyHomePageState of(BuildContext context) {
-    return context.findAncestorStateOfType();
-  }
+  _ChatPageState createState() => _ChatPageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _ChatPageState extends State<ChatPage> {
   var textEditingController = TextEditingController();
 
   /// The initial promt given to OpenAI
@@ -116,7 +89,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       /// The top app bar with title
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text("Cooking Companion"),
       ),
       body: Column(
         children: [
