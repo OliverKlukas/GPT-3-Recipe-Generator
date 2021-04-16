@@ -1,4 +1,4 @@
-# GPT-3 Makeathon by TUM.AI - Team: Tast the Data
+# GPT-3 Makeathon by TUM.AI - Team: Taste the Data
 Team - Taste the Data: @Carmen Heger, @David Stiftl, @Christopher Schütz and @Oliver Klukas
 
 ## Challenge - Recipe Generator by B/S/H Hausgeräte GmbH
