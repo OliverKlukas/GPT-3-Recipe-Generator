@@ -8,8 +8,8 @@
 // and displays a corresponding message in the center of the [Scaffold].
 
 import 'package:flutter/material.dart';
-
-import 'chat.dart';
+import 'package:recipe_generator/chat.dart';
+import 'inspiration.dart';
 import 'discovery.dart';
 
 void main() => runApp(const MyApp());
@@ -44,10 +44,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static List<Widget> _widgetOptions = <Widget>[
     DiscoveryPage(),
-    Text(
-      'Index 1: Business',
-      style: optionStyle,
-    ),
+    InspirationApp(),
     ChatPage(),
   ];
 
