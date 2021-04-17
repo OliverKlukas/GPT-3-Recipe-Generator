@@ -1,6 +1,9 @@
+// import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:recipe_generator/chat.dart';
+import 'package:recipe_generator/recipe_service.dart';
 import 'constants.dart';
+// import 'package:http/http.dart' as http;
 
 class InspirationApp extends StatefulWidget {
   @override
@@ -8,8 +11,22 @@ class InspirationApp extends StatefulWidget {
 }
 
 class _InspirationAppState extends State<InspirationApp> {
+
+  // String _prompt = "Write a list of totally different recipes:\n\n"
+  //     "1. Lemon Chicken with Asparagus\n"
+  //     "2."
+  // ;
+
+  late Future<String> futureRecipeText;
+
   Color _color = Colors.deepPurple;
   BorderRadiusGeometry _borderRadius = BorderRadius.circular(250.0);
+
+  @override
+  void initState() {
+    super.initState();
+    futureRecipeText = fetchReliableRecipe();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,11 +80,31 @@ class _InspirationAppState extends State<InspirationApp> {
                   SizedBox(
                     height: 15,
                   ),
-                  Text(
-                    "Spaghetti Bolognese",
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
-                    textAlign: TextAlign.center,
+
+                  Center(
+                    child: FutureBuilder<String>(
+                      future: futureRecipeText,
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          return Text(snapshot.data!);
+                        } else if (snapshot.hasError) {
+                          return Text("${snapshot.error}");
+                        }
+
+                        // By default, show a loading spinner.
+                        return CircularProgressIndicator();
+                      },
+                    ),
                   ),
+
+                  // Text(
+                  //   // "Spaghetti Bolognese",
+                  //   _recipeText,
+                  //   style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
+                  //   textAlign: TextAlign.center,
+                  // ),
+
+
                   SizedBox(
                     height: 22,
                   ),
@@ -131,6 +168,14 @@ class _InspirationAppState extends State<InspirationApp> {
             ),
           ],
         ));
+
+    // getRecipeAndShowDialog() async {
+    //   await getRecipeText();
+    //   showDialog(
+    //       context: context,
+    //       builder: (BuildContext context) => errorDialog
+    //   );
+    // }
 
     return AnimatedContainer(
         width: MediaQuery.of(context).size.width * 0.6,
