@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:recipe_generator/services/image_service.dart';
 
 import 'package:recipe_generator/services/recipeTitle.dart';
 import 'package:recipe_generator/utils/customDialog.dart';
@@ -11,6 +12,8 @@ class InspirationApp extends StatefulWidget {
 class _InspirationAppState extends State<InspirationApp> {
   late Future<String> futureRecipeText;
   String regularRecipeText = "";
+  late Future<String> futureRecipeURL;
+  String regularRecipeURL = "";
 
   Color _color = Colors.deepPurple;
   BorderRadiusGeometry _borderRadius = BorderRadius.circular(250.0);
@@ -19,6 +22,7 @@ class _InspirationAppState extends State<InspirationApp> {
   void initState() {
     super.initState();
     futureRecipeText = fetchReliableRecipe();
+    futureRecipeURL = fetchImageUrl("Hamburger");
   }
 
   @override
@@ -27,12 +31,15 @@ class _InspirationAppState extends State<InspirationApp> {
     getRecipeAndShowDialog() {
       setState(() {
         futureRecipeText = fetchReliableRecipe();
+        futureRecipeURL = fetchImageUrl("Hamburger");
       });
       showDialog(
           context: context,
           builder: (BuildContext context) => CustomDialogBox(
               futureRecipeText: futureRecipeText,
-              regularRecipeText: regularRecipeText
+              regularRecipeText: regularRecipeText,
+              futureRecipeURL: futureRecipeURL,
+              regularRecipeURL: regularRecipeURL
           ));
     }
 

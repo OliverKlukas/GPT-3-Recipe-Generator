@@ -1,12 +1,7 @@
-import 'dart:convert';
-import 'dart:io';
 import 'package:bubble/bubble.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-// Run your app with 'flutter run --dart-define=OPENAI_KEY=YOUR_API_KEY_HERE
-const OPENAI_KEY = String.fromEnvironment("OPENAI_KEY");
-/// Dataclass to store a single message,
-/// either from you or the AI
+import 'package:recipe_generator/services/assistedCooking.dart';
+
 class Message {
   String text;
   bool byMe;
@@ -14,16 +9,23 @@ class Message {
 }
 /// Main page of our app, containing a scrollable chat history and a text field
 class ChatPage extends StatefulWidget {
+  String recipeTitle;
+
+  ChatPage({Key? key, required this.recipeTitle}) : super(key: key);
+
   @override
   _ChatPageState createState() => _ChatPageState();
 }
 class _ChatPageState extends State<ChatPage> {
   var textEditingController = TextEditingController();
-  /// The initial promt given to OpenAI
-  String prompt =
-      "The following is a conversation with an AI assistant. The assistant is helpful, creative, clever, and very friendly.\n"
-      "Human: Hello, who are you?\n"
-      "AI: I am an AI created by OpenAI. How can I help you today?";
+
+  String prompt = "";
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
   /// The history of chat messages sent
   List<Message> messages = [];
   /// Construct a prompt for OpenAI with the new message and store the response
@@ -31,6 +33,11 @@ class _ChatPageState extends State<ChatPage> {
     if (message == "") {
       return;
     }
+
+    if (messages.isEmpty) {
+      prompt = await getFullAssistantPrompt(widget.recipeTitle);
+    }
+
     /// Store the message itself
     setState(() {
       messages.add(Message(message, true));
@@ -43,36 +50,25 @@ class _ChatPageState extends State<ChatPage> {
         "AI:";
     /// Make the api request to OpenAI
     /// See available api parameters here: https://beta.openai.com/docs/api-reference/completions/create
-    var result = await http.post(
-      Uri.parse("https://api.openai.com/v1/engines/davinci/completions"),
-      headers: {
-        "Authorization": "Bearer $OPENAI_KEY",
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      },
-      body: jsonEncode({
-        "prompt": prompt,
-        "max_tokens": 100,
-        "temperature": 0,
-        "top_p": 1,
-        "stop": "\n",
-      }),
-    );
-    /// Decode the body and select the first choice
-    var body = jsonDecode(result.body);
-    var text = body["choices"][0]["text"];
+    String text = "";
+
+    await Future.wait([fetchAssistantResponse(prompt)]).then((values) => {
+      text += values[0]
+    });
+
     prompt += text;
     /// Store the response message
     setState(() {
       messages.add(Message(text.trim(), false));
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       /// The top app bar with title
       appBar: AppBar(
-        title: Text("Cooking Companion"),
+        title: Text(widget.recipeTitle),
       ),
       body: Column(
         children: [

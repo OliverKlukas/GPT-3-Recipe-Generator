@@ -1,16 +1,17 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 
-import 'package:recipe_generator/views/recipeDetail.dart';
 import 'package:recipe_generator/views/chat.dart';
 import 'package:recipe_generator/utils/constants.dart';
 
 class ListDialogBox extends StatefulWidget {
   String recipeName;
+  String imageURL;
 
   ListDialogBox({
     Key? key,
-    required this.recipeName
+    required this.recipeName,
+    required this.imageURL
   }) : super(key: key);
 
   @override
@@ -49,7 +50,7 @@ class _ListDialogBoxState extends State<ListDialogBox> {
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   Text(
-                    "Hooray! 🎉\nRecipe Found 🥳",
+                    "Looks Good! 🎉\nLet's Start Cooking 🥳",
                     style: TextStyle(fontSize: 18),
                     textAlign: TextAlign.center,
                   ),
@@ -70,7 +71,9 @@ class _ListDialogBoxState extends State<ListDialogBox> {
                       alignment: Alignment.center,
                       child: TextButton(
                           onPressed: () {
-                            Navigator.of(context).pop();
+                            Navigator.push(context, MaterialPageRoute(builder: (context) {
+                              return RecipeDetailApp(recipeTitle: widget.recipeName);
+                            }));
                           },
                           child: Text(
                             "Recipe",
@@ -99,7 +102,7 @@ class _ListDialogBoxState extends State<ListDialogBox> {
                             // Navigator.of(context).pop();
                             Navigator.push(context, MaterialPageRoute(
                                 builder: (context) {
-                                  return ChatPage();
+                                  return ChatPage(recipeTitle: widget.recipeName);
                                 }));
                           },
                           child: Text(
@@ -120,7 +123,7 @@ class _ListDialogBoxState extends State<ListDialogBox> {
                 child: ClipRRect(
                     borderRadius: BorderRadius.all(
                         Radius.circular(Constants.avatarRadius)),
-                    child: Image.asset("spaghetti.jpg")),
+                    child: Image.network(widget.imageURL)),
               ),
             ),
           ],
