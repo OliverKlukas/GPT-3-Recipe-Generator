@@ -140,7 +140,7 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
                           onPressed: () {
                             // Navigator.of(context).pop();
                             Navigator.push(context, MaterialPageRoute(builder: (context) {
-                              return ChatPage();
+                              return ChatPage(recipeTitle: widget.regularRecipeText);
                             }));
                           },
                           child: Text(

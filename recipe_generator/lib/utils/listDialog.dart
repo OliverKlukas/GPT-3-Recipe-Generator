@@ -1,7 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 
-import 'package:recipe_generator/views/recipeDetail.dart';
 import 'package:recipe_generator/views/chat.dart';
 import 'package:recipe_generator/utils/constants.dart';
 
@@ -103,7 +102,7 @@ class _ListDialogBoxState extends State<ListDialogBox> {
                             // Navigator.of(context).pop();
                             Navigator.push(context, MaterialPageRoute(
                                 builder: (context) {
-                                  return ChatPage();
+                                  return ChatPage(recipeTitle: widget.recipeName);
                                 }));
                           },
                           child: Text(
