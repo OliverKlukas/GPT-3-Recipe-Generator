@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+
 import 'package:recipe_generator/chat.dart';
 import 'package:recipe_generator/recipe_service.dart';
 import 'constants.dart';
+import 'package:recipe_generator/views/recipeDetail.dart';
 
 class InspirationApp extends StatefulWidget {
   @override
@@ -86,7 +88,9 @@ class _InspirationAppState extends State<InspirationApp> {
                       alignment: Alignment.center,
                       child: TextButton(
                           onPressed: () {
-                            Navigator.of(context).pop();
+                            Navigator.push(context, MaterialPageRoute(builder: (context) {
+                              return RecipeDetail();
+                            }));
                           },
                           child: Text(
                             "Recipe",
