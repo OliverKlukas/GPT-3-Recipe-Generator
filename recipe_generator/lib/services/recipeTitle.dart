@@ -2,8 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
-
-const OPENAI_KEY = String.fromEnvironment("OPENAI_KEY");
+import 'package:recipe_generator/services/openAIUtils.dart';
 
 // Create recipes
 Future<String> fetchRecipe(String prompt, Object configuration) async {
@@ -69,7 +68,7 @@ Future<List> searchRecipeWithInput(String query) async {
     "search_model": "ada",
     "query": prompt,
     //max_rerank=50,
-    "file": "file-g2zuMmsXN6cQ8bLHAaSVg6On"
+    "file": OPENAI_FILE_ID
   };
   return searchRecipe(prompt, configuration);
 }

@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 const OPENAI_KEY = String.fromEnvironment("OPENAI_KEY");
+const OPENAI_FILE_ID = String.fromEnvironment("OPENAI_FILE_ID");
 
 Future<String> fetchCompletion(
     String prompt,
