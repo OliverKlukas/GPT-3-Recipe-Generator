@@ -7,7 +7,7 @@ import 'package:recipe_generator/models/recipeModel.dart';
 import 'package:recipe_generator/utils/recipiesList.dart';
 
 class DiscoveryPage extends StatefulWidget {
-  // Recipe static dataset
+  // Recipe base dataset
   List<Recipe> allRecipes = [
     Recipe(name: "Spaghetti Bolognese", imageURL: ''),
     Recipe(name: "Pancakes", imageURL: ''),
@@ -21,6 +21,9 @@ class DiscoveryPage extends StatefulWidget {
     Recipe(name: "Pizza Salami", imageURL: ''),
   ];
 
+  // Dynamic recipe list for search
+  var dispRecipes = <Recipe>[];
+
   @override
   _DiscoveryPageState createState() => _DiscoveryPageState();
 }
@@ -30,17 +33,13 @@ class _DiscoveryPageState extends State<DiscoveryPage> {
   // Editing controller for search
   TextEditingController editingController = TextEditingController();
 
-
-  // Dynamic recipe list for search
-  var dispRecipes = <Recipe>[];
-
   // Search result
   late Future<String> futureRecipeTitle;
 
   // Fetch images based on created names
-  Future<List<Recipe>> getRecipes() async{
+  Future<List<Recipe>> getRecipeImages() async{
     setState(() {
-      dispRecipes.forEach((element) async {
+      widget.dispRecipes.forEach((element) async {
         if(element.imageURL == ''){
           element.imageURL = await fetchImageUrl(element.name);
         }
@@ -51,14 +50,14 @@ class _DiscoveryPageState extends State<DiscoveryPage> {
         }
       });
     });
-    return dispRecipes;
+    return widget.dispRecipes;
   }
 
   // Initialize recipes
   @override
   void initState() {
     super.initState();
-    dispRecipes.addAll(widget.allRecipes);
+    widget.dispRecipes.addAll(widget.allRecipes);
   }
 
   // Search functionality
@@ -68,23 +67,24 @@ class _DiscoveryPageState extends State<DiscoveryPage> {
     if(query.isNotEmpty) {
       List<Recipe> dummyListData = <Recipe>[];
       searchRecipeWithInput(query).then((futureRecipeTitle) {
-          setState(() {
+          setState(() async {
             if (futureRecipeTitle is List) {
               for (var i=0; i<futureRecipeTitle.length; i++) {
                 dummyListData.add(Recipe(
-                    name: futureRecipeTitle[i].toString(), imageURL: ""));
+                    name: futureRecipeTitle[i].toString(), imageURL: await fetchImageUrl(futureRecipeTitle[i].toString())));
               };
-              dispRecipes.clear();
+              widget.dispRecipes.clear();
               widget.allRecipes.addAll(dummyListData);
-              dispRecipes.addAll(dummyListData);
+              widget.dispRecipes.addAll(dummyListData);
+              widget.dispRecipes = await getRecipeImages();
             }
           });
         });
-      return;
     } else {
-      setState(() {
-        dispRecipes.clear();
-        dispRecipes.addAll(widget.allRecipes);
+      setState(() async {
+        widget.dispRecipes.clear();
+        widget.dispRecipes.addAll(widget.allRecipes);
+        widget.dispRecipes = await getRecipeImages();
       });
     }
   }
@@ -109,7 +109,7 @@ class _DiscoveryPageState extends State<DiscoveryPage> {
         }
         return Container();
       },
-      future: getRecipes(),
+      future: getRecipeImages(),
     );
   }
 
