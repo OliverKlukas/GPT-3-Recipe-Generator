@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:recipe_generator/services/image_service.dart';
+import 'package:recipe_generator/services/recipeTitle.dart';
 import 'package:recipe_generator/models/recipeModel.dart';
 import 'package:recipe_generator/utils/recipiesList.dart';
 
@@ -35,6 +36,9 @@ class _DiscoveryPageState extends State<DiscoveryPage> {
   // Dynamic recipe list for search
   var dispRecipes = <Recipe>[];
 
+  // Search result
+  late Future<String> futureRecipeTitle;
+
   // Fetch images based on created names
   Future<List<Recipe>> getRecipes() async{
     dispRecipes.forEach((element) async {
@@ -63,15 +67,18 @@ class _DiscoveryPageState extends State<DiscoveryPage> {
     dummySearchList.addAll(allRecipes);
     if(query.isNotEmpty) {
       List<Recipe> dummyListData = <Recipe>[];
-      dummySearchList.forEach((item) {
-        if(item.contains(query)) {
-          dummyListData.add(item);
-        }
-      });
-      setState(() {
-        dispRecipes.clear();
-        dispRecipes.addAll(dummyListData);
-      });
+      searchRecipeWithInput(query).then((futureRecipeTitle) {
+          setState(() {
+            if (futureRecipeTitle is List) {
+              for (var i=0; i<futureRecipeTitle.length; i++) {
+                dummyListData.add(Recipe(
+                    name: futureRecipeTitle[i].toString(), imageURL: ""));
+              };
+              dispRecipes.clear();
+              dispRecipes.addAll(dummyListData);
+            }
+          });
+        });
       return;
     } else {
       setState(() {

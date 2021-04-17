@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 
 const OPENAI_KEY = String.fromEnvironment("OPENAI_KEY");
 
+// Create recipes
 Future<String> fetchRecipe(String prompt, Object configuration) async {
   var result = await http.post(
     Uri.parse("https://api.openai.com/v1/engines/davinci/completions"),
@@ -34,4 +35,41 @@ Future<String> fetchReliableRecipe() async {
     "stop": "\n",
   };
   return fetchRecipe(prompt, configuration);
+}
+
+// Find existing recipes
+Future<List> searchRecipe(String prompt, Object configuration) async {
+  var result = await http.post(
+      Uri.parse("https://api.openai.com/v1/engines/ada/search"),
+      headers: {
+        "Authorization": "Bearer $OPENAI_KEY",
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      },
+      body: jsonEncode(configuration)
+  );
+  /// Decode the body and select the first choice
+  var body = jsonDecode(result.body);
+  var recipe_list = body["data"];
+  var title_list = [];
+  for (var i=0; i<recipe_list.length; i++) {
+    var text = recipe_list[i]["text"];
+    var titleIdx = text.indexOf('\n');
+    var title = text.substring(3, titleIdx);
+    title = "${title[0].toUpperCase()}${title.substring(1).toLowerCase()}";
+    var recipe = text.substring(titleIdx+1);
+    title_list.add(title);
+  }
+  return title_list;
+}
+
+Future<List> searchRecipeWithInput(String query) async {
+  String prompt = query;
+  Object configuration = {
+    "search_model": "ada",
+    "query": prompt,
+    //max_rerank=50,
+    "file": "file-g2zuMmsXN6cQ8bLHAaSVg6On"
+  };
+  return searchRecipe(prompt, configuration);
 }
