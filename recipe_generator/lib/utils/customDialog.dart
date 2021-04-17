@@ -1,21 +1,28 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 
-import 'chat.dart';
-import 'utils/constants.dart';
+import 'package:recipe_generator/views/recipeDetail.dart';
+import 'package:recipe_generator/chat.dart';
+import 'package:recipe_generator/utils/constants.dart';
 
-class RecipesList extends StatefulWidget{
-  String name;
-  String imageURL;
-  RecipesList({required this.name,required this.imageURL});
+class CustomDialogBox extends StatefulWidget {
+  Future<String> futureRecipeText;
+  String regularRecipeText;
+
+  CustomDialogBox({
+    Key? key,
+    required this.futureRecipeText,
+    required this.regularRecipeText
+  }) : super(key: key);
+
   @override
-  _RecipesListState createState() => _RecipesListState();
+  _CustomDialogBoxState createState() => _CustomDialogBoxState();
 }
 
-class _RecipesListState extends State<RecipesList> {
+class _CustomDialogBoxState extends State<CustomDialogBox> {
   @override
   Widget build(BuildContext context) {
-
-    Dialog errorDialog = Dialog(
+    return Dialog(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(Constants.padding),
         ),
@@ -51,10 +58,24 @@ class _RecipesListState extends State<RecipesList> {
                   SizedBox(
                     height: 15,
                   ),
-                  Text(
-                    "Spaghetti Bolognese",
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
-                    textAlign: TextAlign.center,
+                  Center(
+                    child: FutureBuilder<String>(
+                      future: widget.futureRecipeText,
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          widget.regularRecipeText = snapshot.data!;
+                          return Text(
+                            snapshot.data!,
+                            style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
+                            textAlign: TextAlign.center,
+                          );
+                        } else if (snapshot.hasError) {
+                          return Text("${snapshot.error}");
+                        }
+                        // By default, show a loading spinner.
+                        return CircularProgressIndicator();
+                      },
+                    ),
                   ),
                   SizedBox(
                     height: 22,
@@ -65,7 +86,9 @@ class _RecipesListState extends State<RecipesList> {
                       alignment: Alignment.center,
                       child: TextButton(
                           onPressed: () {
-                            Navigator.of(context).pop();
+                            Navigator.push(context, MaterialPageRoute(builder: (context) {
+                              return RecipeDetail(recipeTitle: widget.regularRecipeText);
+                            }));
                           },
                           child: Text(
                             "Recipe",
@@ -119,44 +142,5 @@ class _RecipesListState extends State<RecipesList> {
             ),
           ],
         ));
-
-    return GestureDetector(
-      onTap: (){
-        showDialog(
-          context: context,
-          builder: (BuildContext context) => errorDialog,
-        );
-      },
-      child: Container(
-        padding: EdgeInsets.only(left: 16,right: 16,top: 10,bottom: 10),
-        child: Row(
-          children: <Widget>[
-            Expanded(
-              child: Row(
-                children: <Widget>[
-                  CircleAvatar(
-                    backgroundImage: NetworkImage(widget.imageURL),
-                    maxRadius: 30,
-                  ),
-                  SizedBox(width: 16,),
-                  Expanded(
-                    child: Container(
-                      color: Colors.transparent,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text(widget.name, style: TextStyle(fontSize: 16),),
-                          SizedBox(height: 6,),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 }
