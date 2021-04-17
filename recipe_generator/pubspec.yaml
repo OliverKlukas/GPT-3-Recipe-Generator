@@ -26,6 +26,7 @@ dependencies:
   bubble: ^1.2.1
   http: ^0.13.1
   unsplash_client: ^2.0.0
+  speech_to_text: ^3.2.0
 
 dev_dependencies:
   flutter_test:

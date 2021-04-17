@@ -5,6 +5,7 @@ import 'package:recipe_generator/services/image_service.dart';
 import 'package:recipe_generator/services/recipeTitle.dart';
 import 'package:recipe_generator/models/recipeModel.dart';
 import 'package:recipe_generator/utils/recipiesList.dart';
+import 'package:speech_to_text/speech_to_text.dart' as stt;
 
 class DiscoveryPage extends StatefulWidget {
 
@@ -36,9 +37,6 @@ class _DiscoveryPageState extends State<DiscoveryPage> {
   // Dynamic recipe list for search
   var dispRecipes = <Recipe>[];
 
-  // Search result
-  late Future<String> futureRecipeTitle;
-
   // Fetch images based on created names
   Future<List<Recipe>> getRecipes() async{
     dispRecipes.forEach((element) async {
@@ -54,12 +52,45 @@ class _DiscoveryPageState extends State<DiscoveryPage> {
     return dispRecipes;
   }
 
+  // Initialize speech
+  stt.SpeechToText _speech2txt = stt.SpeechToText();
+  bool _isListening = false;
+  String _text = 'Press the button and start speaking';
+
   // Initialize recipes
   @override
   void initState() {
     super.initState();
     dispRecipes.addAll(allRecipes);
+    _speech2txt = stt.SpeechToText();
   }
+
+
+  // Speech listener
+  void _listen() async {
+    if (!_isListening) {
+      editingController.text = "";
+      bool available = await _speech2txt.initialize(
+        onStatus: (val) => print('onStatus: $val'),
+        onError: (val) => print('onError: $val'),
+      );
+      if (available) {
+        setState(() => _isListening = true);
+        _speech2txt.listen(
+          onResult: (val) => setState(() {
+            _text = val.recognizedWords;
+            editingController.text = _text;
+            editingController.selection = TextSelection.fromPosition(
+                TextPosition(offset: editingController.text.length));
+          }),
+        );
+      }
+    } else {
+      setState(() => _isListening = false);
+      _speech2txt.stop();
+    }
+  }
+
 
   // Search functionality
   void filterSearchResults(String query) {
@@ -131,13 +162,17 @@ class _DiscoveryPageState extends State<DiscoveryPage> {
                 ),
               ),
             ),
+            FloatingActionButton(
+              onPressed: _listen,
+              child: Icon(_isListening ? Icons.mic : Icons.mic_none),
+            ),
             Padding(
               padding: EdgeInsets.only(top: 16,left: 16,right: 16),
               child: TextField(
-                onChanged: (value) {
+                controller: editingController,
+                onSubmitted: (value) {
                   filterSearchResults(value);
                 },
-                controller: editingController,
                 decoration: InputDecoration(
                   hintText: "What do you want to eat today?",
                   hintStyle: TextStyle(color: Colors.grey.shade600),
