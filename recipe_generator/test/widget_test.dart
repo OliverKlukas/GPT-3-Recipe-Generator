@@ -8,7 +8,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:recipe_generator/chat.dart';
+import 'package:recipe_generator/views/chat.dart';
 
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {

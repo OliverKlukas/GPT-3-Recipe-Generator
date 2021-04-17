@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:recipe_generator/recipe_service.dart';
+import 'package:recipe_generator/services/recipeTitle.dart';
 import 'package:recipe_generator/utils/customDialog.dart';
 
 class InspirationApp extends StatefulWidget {
