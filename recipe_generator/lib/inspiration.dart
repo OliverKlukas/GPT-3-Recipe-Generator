@@ -22,6 +22,7 @@ class _InspirationAppState extends State<InspirationApp> {
 
   @override
   Widget build(BuildContext context) {
+
     Dialog errorDialog = Dialog(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(Constants.padding),
@@ -140,6 +141,15 @@ class _InspirationAppState extends State<InspirationApp> {
           ],
         ));
 
+    getRecipeAndShowDialog() {
+      setState(() {
+        futureRecipeText = fetchReliableRecipe();
+      });
+      showDialog(
+          context: context,
+          builder: (BuildContext context) => errorDialog);
+    }
+
     return AnimatedContainer(
         width: MediaQuery.of(context).size.width * 0.6,
         height: MediaQuery.of(context).size.width * 0.6,
@@ -159,11 +169,7 @@ class _InspirationAppState extends State<InspirationApp> {
             style: TextStyle(
                 fontWeight: FontWeight.bold, fontSize: 40, color: Colors.white),
           ),
-          onPressed: () => {
-            showDialog(
-                context: context,
-                builder: (BuildContext context) => errorDialog)
-          },
+          onPressed: getRecipeAndShowDialog,
         )));
   }
 }
