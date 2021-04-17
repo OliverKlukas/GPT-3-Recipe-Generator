@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:recipe_generator/services/image_service.dart';
 
 import 'package:recipe_generator/views/recipeDetail.dart';
 import 'package:recipe_generator/views/chat.dart';
@@ -9,10 +10,15 @@ class CustomDialogBox extends StatefulWidget {
   Future<String> futureRecipeText;
   String regularRecipeText;
 
+  Future<String> futureRecipeURL;
+  String regularRecipeURL;
+
   CustomDialogBox({
     Key? key,
     required this.futureRecipeText,
-    required this.regularRecipeText
+    required this.regularRecipeText,
+    required this.futureRecipeURL,
+    required this.regularRecipeURL
   }) : super(key: key);
 
   @override
@@ -20,6 +26,24 @@ class CustomDialogBox extends StatefulWidget {
 }
 
 class _CustomDialogBoxState extends State<CustomDialogBox> {
+  String tmpText = "";
+  void _fetchImage() {
+    Future.wait([widget.futureRecipeText]).then((value) => {
+        setState(() {
+          tmpText = value[0];
+        }),
+        localImageFetch()
+    });
+  }
+
+  Future<String> localImageFetch() async {
+    String url = await fetchImageUrl(tmpText);
+    setState(() {
+      widget.regularRecipeURL = url;
+    });
+    return url;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -137,8 +161,9 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
                 child: ClipRRect(
                     borderRadius: BorderRadius.all(
                         Radius.circular(Constants.avatarRadius)),
-                    child: Image.asset("spaghetti.jpg")),
-              ),
+                    child:
+                      Image.network(widget.regularRecipeURL),
+              )),
             ),
           ],
         ));

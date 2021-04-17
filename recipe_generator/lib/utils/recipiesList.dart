@@ -19,7 +19,8 @@ class _RecipesListState extends State<RecipesList> {
         showDialog(
           context: context,
           builder: (BuildContext context) => ListDialogBox(
-              recipeName: widget.name
+            recipeName: widget.name,
+            imageURL: widget.imageURL,
           )
         );
       },
