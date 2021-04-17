@@ -45,7 +45,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   static List<Widget> _widgetOptions = <Widget>[
     DiscoveryPage(),
     InspirationApp(),
-    ChatPage(),
+    // ChatPage(),
   ];
 
   void _onItemTapped(int index) {
@@ -73,10 +73,10 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
             icon: Icon(Icons.explore),
             label: 'Inspiration',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.chat),
-            label: 'Chat',
-          ),
+          // BottomNavigationBarItem(
+          //   icon: Icon(Icons.chat),
+          //   label: 'Chat',
+          // ),
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.amber[800],
