@@ -72,72 +72,78 @@ class _RecipeDetailAppState extends State<RecipeDetailApp> {
                     ),
                   )
                 ]),
-              Divider(),
-              Row(
+            Divider(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Column(
+                  children: [
+                    Text(
+                      "Ingredients",
+                      style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
+                    ),
+                  ],
+                ),
+              ]
+            ),
+            Row (
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(3.0),
+                  child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        FutureBuilder<String>(
+                          future: futureFullRecipe,
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData) {
+                              String fullText = snapshot.data!;
+                              List<String> response = parseIngredientsAndDirections(fullText);
+                              return Text(
+                                response[0],
+                                style: TextStyle(fontSize: 16),
+                              );
+                            } else if (snapshot.hasError) {
+                              return Text("${snapshot.error}");
+                            }
+                            // By default, show a loading spinner.
+                            return CircularProgressIndicator();
+                          },
+                        )
+                      ]
+                  ),
+                ),
+              ]
+            ),
+            Divider(),
+            Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Column(
                     children: [
                       Text(
-                          "Ingredients",
-                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+                        "Directions",
+                        style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
                       ),
                     ],
                   ),
                 ]
-              ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-
-                      FutureBuilder<String>(
-                        future: futureFullRecipe,
-                        builder: (context, snapshot) {
-                          if (snapshot.hasData) {
-                            String fullText = snapshot.data!;
-                            List<String> response = parseIngredientsAndDirections(fullText);
-                            return Text(
-                              response[0],
-                              style: TextStyle(fontSize: 12),
-                            );
-                          } else if (snapshot.hasError) {
-                            return Text("${snapshot.error}");
-                          }
-                          // By default, show a loading spinner.
-                          return CircularProgressIndicator();
-                        },
-                      )
-
-
-
-                    ]
-                ),
-              ]
             ),
-            Divider(),
             Column(
               children: [
-                Padding(
-                  padding: EdgeInsets.all(10.0),
-                  child: Text(
-                    "Directions",
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
-                  )
-                ),
-
-
                 FutureBuilder<String>(
                   future: futureFullRecipe,
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
                       String fullText = snapshot.data!;
                       List<String> response = parseIngredientsAndDirections(fullText);
-                      return Text(
-                        response[1],
-                        style: TextStyle(fontSize: 12),
+                      return Padding(
+                        padding: const EdgeInsets.all(6.0),
+                        child: Text(
+                          response[1],
+                          style: TextStyle(fontSize: 16),
+                        ),
                       );
                     } else if (snapshot.hasError) {
                       return Text("${snapshot.error}");
@@ -146,8 +152,6 @@ class _RecipeDetailAppState extends State<RecipeDetailApp> {
                     return CircularProgressIndicator();
                   },
                 )
-
-
               ],
             ),
           ]),
