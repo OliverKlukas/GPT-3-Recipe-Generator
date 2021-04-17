@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:recipe_generator/services/discoverRecipes.dart';
 import 'package:recipe_generator/services/image_service.dart';
 import 'package:recipe_generator/services/recipeTitle.dart';
 import 'package:recipe_generator/models/recipeModel.dart';
@@ -61,11 +62,12 @@ class _DiscoveryPageState extends State<DiscoveryPage> {
   }
 
   // Search functionality
-  void filterSearchResults(String query) {
+  Future<void> filterSearchResults(String query) async {
     List<Recipe> dummySearchList = <Recipe>[];
     dummySearchList.addAll(widget.allRecipes);
     if(query.isNotEmpty) {
       List<Recipe> dummyListData = <Recipe>[];
+      print(fetchTitlesByPreference(query));
       searchRecipeWithInput(query).then((futureRecipeTitle) {
           setState(() async {
             if (futureRecipeTitle is List) {
@@ -76,8 +78,14 @@ class _DiscoveryPageState extends State<DiscoveryPage> {
               widget.dispRecipes.clear();
               widget.allRecipes.addAll(dummyListData);
               widget.dispRecipes.addAll(dummyListData);
-              widget.dispRecipes = await getRecipeImages();
             }
+            // Search all existing data
+            //widget.allRecipes.forEach((item) {
+            //  if(item.contains(query)) {
+            //    widget.dispRecipes.add(item);
+            //  }
+            //});
+            widget.dispRecipes = await getRecipeImages();
           });
         });
     } else {
