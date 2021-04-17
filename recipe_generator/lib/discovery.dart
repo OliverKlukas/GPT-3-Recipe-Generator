@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:recipe_generator/recipeModel.dart';
 import 'package:recipe_generator/recipiesList.dart';
+import 'package:recipe_generator/recipe_service.dart';
 
 class DiscoveryPage extends StatefulWidget {
   @override
