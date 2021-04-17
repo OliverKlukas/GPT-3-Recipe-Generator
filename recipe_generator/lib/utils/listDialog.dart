@@ -1,21 +1,26 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 
-import 'chat.dart';
-import 'utils/constants.dart';
+import 'package:recipe_generator/views/recipeDetail.dart';
+import 'package:recipe_generator/views/chat.dart';
+import 'package:recipe_generator/utils/constants.dart';
 
-class RecipesList extends StatefulWidget{
-  String name;
-  String imageURL;
-  RecipesList({required this.name,required this.imageURL});
+class ListDialogBox extends StatefulWidget {
+  String recipeName;
+
+  ListDialogBox({
+    Key? key,
+    required this.recipeName
+  }) : super(key: key);
+
   @override
-  _RecipesListState createState() => _RecipesListState();
+  _ListDialogBoxState createState() => _ListDialogBoxState();
 }
 
-class _RecipesListState extends State<RecipesList> {
+class _ListDialogBoxState extends State<ListDialogBox> {
   @override
   Widget build(BuildContext context) {
-
-    Dialog errorDialog = Dialog(
+    return Dialog(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(Constants.padding),
         ),
@@ -52,7 +57,7 @@ class _RecipesListState extends State<RecipesList> {
                     height: 15,
                   ),
                   Text(
-                    "Spaghetti Bolognese",
+                    widget.recipeName,
                     style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
                     textAlign: TextAlign.center,
                   ),
@@ -92,9 +97,10 @@ class _RecipesListState extends State<RecipesList> {
                       child: TextButton(
                           onPressed: () {
                             // Navigator.of(context).pop();
-                            Navigator.push(context, MaterialPageRoute(builder: (context) {
-                              return ChatPage();
-                            }));
+                            Navigator.push(context, MaterialPageRoute(
+                                builder: (context) {
+                                  return ChatPage();
+                                }));
                           },
                           child: Text(
                             "Assistant",
@@ -119,44 +125,5 @@ class _RecipesListState extends State<RecipesList> {
             ),
           ],
         ));
-
-    return GestureDetector(
-      onTap: (){
-        showDialog(
-          context: context,
-          builder: (BuildContext context) => errorDialog,
-        );
-      },
-      child: Container(
-        padding: EdgeInsets.only(left: 16,right: 16,top: 10,bottom: 10),
-        child: Row(
-          children: <Widget>[
-            Expanded(
-              child: Row(
-                children: <Widget>[
-                  CircleAvatar(
-                    backgroundImage: NetworkImage(widget.imageURL),
-                    maxRadius: 30,
-                  ),
-                  SizedBox(width: 16,),
-                  Expanded(
-                    child: Container(
-                      color: Colors.transparent,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text(widget.name, style: TextStyle(fontSize: 16),),
-                          SizedBox(height: 6,),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 }

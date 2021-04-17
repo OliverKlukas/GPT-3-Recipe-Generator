@@ -1,8 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'package:recipe_generator/recipeModel.dart';
-import 'package:recipe_generator/recipiesList.dart';
+import 'package:recipe_generator/services/image_service.dart';
+import 'package:recipe_generator/models/recipeModel.dart';
+import 'package:recipe_generator/utils/recipiesList.dart';
 
 class DiscoveryPage extends StatefulWidget {
+
   @override
   _DiscoveryPageState createState() => _DiscoveryPageState();
 }
@@ -14,28 +18,43 @@ class _DiscoveryPageState extends State<DiscoveryPage> {
 
   // Recipe static dataset
   List<Recipe> allRecipes = [
-    Recipe(name: "Spaghetti Bolognese", imageURL: "https://img.chefkoch-cdn.de/rezepte/807111184564987/bilder/668266/crop-960x720/spaghetti-bolognese.jpg"),
-    Recipe(name: "Pancakes", imageURL: "https://www.einfachbacken.de/sites/einfachbacken.de/files/styles/full_width_tablet_4_3/public/2020-08/american_pancakes.jpg?h=4521fff0&itok=yvzcMTED"),
-    Recipe(name: "Indian Curry",imageURL: "https://hips.hearstapps.com/del.h-cdn.co/assets/17/31/1501791674-delish-chicken-curry-horizontal.jpg?crop=1.00xw:0.750xh;0,0.159xh&resize=1200:*"),
-    Recipe(name: "Pizza Fungi", imageURL: "https://media.kaufland.com/images/PPIM/AP_Content_1010/std.lang.all/86/19/Asset_3618619.jpg"),
-    Recipe(name: "Hamburger",  imageURL: "https://www.kuechengoetter.de/uploads/media/630x630/09/24729-hamburger-zum-selber-bauen.jpg?v=1-0"),
-    Recipe(name: "Cheese Cake",  imageURL: "https://www.einfachbacken.de/sites/einfachbacken.de/files/styles/full_width_tablet_4_3/public/2020-03/klassischer_kasekuchen_2.jpg?h=4521fff0&itok=-W9far_5"),
-    Recipe(name: "Spaghetti Bolognese", imageURL: "https://img.chefkoch-cdn.de/rezepte/807111184564987/bilder/668266/crop-960x720/spaghetti-bolognese.jpg"),
-    Recipe(name: "Pancakes", imageURL: "https://www.einfachbacken.de/sites/einfachbacken.de/files/styles/full_width_tablet_4_3/public/2020-08/american_pancakes.jpg?h=4521fff0&itok=yvzcMTED"),
-    Recipe(name: "Indian Curry",imageURL: "https://hips.hearstapps.com/del.h-cdn.co/assets/17/31/1501791674-delish-chicken-curry-horizontal.jpg?crop=1.00xw:0.750xh;0,0.159xh&resize=1200:*"),
-    Recipe(name: "Pizza Fungi", imageURL: "https://media.kaufland.com/images/PPIM/AP_Content_1010/std.lang.all/86/19/Asset_3618619.jpg"),
-    Recipe(name: "Hamburger",  imageURL: "https://www.kuechengoetter.de/uploads/media/630x630/09/24729-hamburger-zum-selber-bauen.jpg?v=1-0"),
-    Recipe(name: "Cheese Cake",  imageURL: "https://www.einfachbacken.de/sites/einfachbacken.de/files/styles/full_width_tablet_4_3/public/2020-03/klassischer_kasekuchen_2.jpg?h=4521fff0&itok=-W9far_5"),
+    Recipe(name: "Spaghetti Bolognese", imageURL: ''),
+    Recipe(name: "Pancakes", imageURL: ''),
+    Recipe(name: "Indian Curry",imageURL: ''),
+    Recipe(name: "Pizza Fungi", imageURL: ''),
+    Recipe(name: "Hamburger", imageURL: ''),
+    Recipe(name: "Cheese Cake", imageURL: ''),
+    Recipe(name: "Spaghetti Bolognese", imageURL: ''),
+    Recipe(name: "Pancakes", imageURL: ''),
+    Recipe(name: "Indian Curry", imageURL: ''),
+    Recipe(name: "Pizza Fungi", imageURL: ''),
+    Recipe(name: "Hamburger",  imageURL: ''),
+    Recipe(name: "Cheese Cake",  imageURL: ''),
   ];
 
   // Dynamic recipe list for search
   var dispRecipes = <Recipe>[];
 
+  // Fetch images based on created names
+  Future<List<Recipe>> getRecipes() async{
+    dispRecipes.forEach((element) async {
+      if(element.imageURL == ''){
+        element.imageURL = await fetchImageUrl(element.name);
+      }
+    });
+    allRecipes.forEach((element) async {
+      if(element.imageURL == ''){
+        element.imageURL = await fetchImageUrl(element.name);
+      }
+    });
+    return dispRecipes;
+  }
+
   // Initialize recipes
   @override
   void initState() {
-    dispRecipes.addAll(allRecipes);
     super.initState();
+    dispRecipes.addAll(allRecipes);
   }
 
   // Search functionality
@@ -60,6 +79,30 @@ class _DiscoveryPageState extends State<DiscoveryPage> {
         dispRecipes.addAll(allRecipes);
       });
     }
+  }
+
+  Widget recipeListWidget() {
+    return FutureBuilder<List<Recipe>>(
+      builder: (context, snapshot) {
+        if (snapshot.hasData && snapshot.connectionState != ConnectionState.none) {
+          List<Recipe> values = snapshot.data!;
+          return ListView.builder(
+            itemCount: values.length,
+            shrinkWrap: true,
+            padding: EdgeInsets.only(top: 16),
+            physics: NeverScrollableScrollPhysics(),
+            itemBuilder: (context, index) {
+              return RecipesList(
+                name: values[index].name,
+                imageURL: values[index].imageURL,
+              );
+            },
+          );
+        }
+        return Container();
+      },
+      future: getRecipes(),
+    );
   }
 
   @override
@@ -89,7 +132,7 @@ class _DiscoveryPageState extends State<DiscoveryPage> {
                 },
                 controller: editingController,
                 decoration: InputDecoration(
-                  hintText: "Search...",
+                  hintText: "What do you want to eat today?",
                   hintStyle: TextStyle(color: Colors.grey.shade600),
                   prefixIcon: Icon(Icons.search,color: Colors.grey.shade600, size: 20,),
                   filled: true,
@@ -104,18 +147,7 @@ class _DiscoveryPageState extends State<DiscoveryPage> {
                 ),
               ),
             ),
-            ListView.builder(
-              itemCount: dispRecipes.length,
-              shrinkWrap: true,
-              padding: EdgeInsets.only(top: 16),
-              physics: NeverScrollableScrollPhysics(),
-              itemBuilder: (context, index){
-                return RecipesList(
-                  name: dispRecipes[index].name,
-                  imageURL: dispRecipes[index].imageURL,
-                );
-              },
-            ),
+            recipeListWidget(),
           ],
         ),
       ),

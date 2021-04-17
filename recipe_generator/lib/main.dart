@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:recipe_generator/views/inspirationPage.dart';
-import 'discovery.dart';
+import 'views/discovery.dart';
 
 void main() => runApp(const MyApp());
 
