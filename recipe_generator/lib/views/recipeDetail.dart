@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 
-class RecipeDetail extends StatefulWidget {
-  @override
-  _RecipeDetailState createState() => _RecipeDetailState();
-}
+class RecipeDetail extends StatelessWidget {
+  String recipeTitle;
 
-class _RecipeDetailState extends State<RecipeDetail> {
-  String _recipeTitle = "Arroz con Pollo";
+  RecipeDetail({Key? key, required this.recipeTitle}) : super(key: key);
 
   String _recipeIngredients = """
   1/2 cup of olive oil
@@ -38,7 +35,7 @@ class _RecipeDetailState extends State<RecipeDetail> {
 
         /// The top app bar with title
         appBar: AppBar(
-          title: Text(_recipeTitle),
+          title: Text(recipeTitle),
         ),
         body: Padding(
           padding: const EdgeInsets.all(5.0),

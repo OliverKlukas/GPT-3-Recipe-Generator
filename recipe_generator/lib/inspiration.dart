@@ -12,6 +12,7 @@ class InspirationApp extends StatefulWidget {
 
 class _InspirationAppState extends State<InspirationApp> {
   late Future<String> futureRecipeText;
+  String regularRecipeText = "";
 
   Color _color = Colors.deepPurple;
   BorderRadiusGeometry _borderRadius = BorderRadius.circular(250.0);
@@ -66,6 +67,7 @@ class _InspirationAppState extends State<InspirationApp> {
                       future: futureRecipeText,
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
+                          regularRecipeText = snapshot.data!;
                           return Text(
                               snapshot.data!,
                               style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
@@ -89,7 +91,7 @@ class _InspirationAppState extends State<InspirationApp> {
                       child: TextButton(
                           onPressed: () {
                             Navigator.push(context, MaterialPageRoute(builder: (context) {
-                              return RecipeDetail();
+                              return RecipeDetail(recipeTitle: regularRecipeText);
                             }));
                           },
                           child: Text(
