@@ -1,6 +1,6 @@
 parseIngredientsAndDirections(String text) {
   List<String> result = [];
-  List<String> stopWords = ["Steps", "Directions"];
+  List<String> stopWords = ["Steps", "Directions", "Instructions"];
   stopWords.forEach((stopWord) {
     String tmp = stopWord + ":\n";
     if (text.contains(tmp)) {
