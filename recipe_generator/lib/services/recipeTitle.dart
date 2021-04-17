@@ -56,13 +56,10 @@ Future<List> searchRecipe(String prompt, Object configuration) async {
     var text = recipe_list[i]["text"];
     var titleIdx = text.indexOf('\n');
     var title = text.substring(3, titleIdx);
+    title = "${title[0].toUpperCase()}${title.substring(1).toLowerCase()}";
     var recipe = text.substring(titleIdx+1);
     title_list.add(title);
   }
-  /*var text = body["data"][0]["text"];
-  var titleIdx = text.indexOf('\n');
-  var title = text.substring(3, titleIdx);
-  var recipe = text.substring(titleIdx+1);*/
   return title_list;
 }
 
