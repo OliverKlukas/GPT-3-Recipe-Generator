@@ -1,33 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:recipe_generator/services/fullRecipe.dart';
+import 'package:recipe_generator/utils/mixins.dart';
 
-class RecipeDetail extends StatelessWidget {
+class RecipeDetailApp extends StatefulWidget {
   String recipeTitle;
 
-  RecipeDetail({Key? key, required this.recipeTitle}) : super(key: key);
+  RecipeDetailApp({Key? key, required this.recipeTitle}) : super(key: key);
 
-  String _recipeIngredients = """
-  1/2 cup of olive oil
-  1/2 cup of chopped onion
-  1/2 cup of chopped green pepper
-  1/2 cup of chopped celery
-  1/2 cup of chopped green onion
-  1/2 cup of chopped green olives
-  1/2 cup of chopped pimiento
-  1/2 cup of chopped parsley
-  1/4 cup of chopped capers
-  1/4 cup of chopped garlic
-  1/4 cup of tomato sauce
-  1 teaspoon of salt
-  1 teaspoon of pepper
-  3 cups of rice (long grain)
-  3 cups of chicken broth (or water)
-  3 cups of cooked chicken (cut into small pieces)
-  3 tablespoons of butter (melted)
-  """;
+  @override
+  _RecipeDetailAppState createState() => _RecipeDetailAppState();
+}
 
-  String _recipeDirections = """
-  In a large pot, heat the olive oil. Add the onion, green pepper, celery, green onion, olives, pimiento, parsley, capers and garlic. Cook for about 5 minutes. Add the tomato sauce and cook for another 5 minutes. Add the salt and pepper. Add the rice and cook for about 5 minutes. Add the chicken broth and cook for about 15 minutes. Add the chicken and cook for another 10 minutes. Add the butter and serve hot.
-  """;
+class _RecipeDetailAppState extends State<RecipeDetailApp> {
+
+  late Future<String> futureFullRecipe;
+
+  @override
+  void initState() {
+    super.initState();
+    futureFullRecipe = fetchFullRecipeByName(widget.recipeTitle);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +27,7 @@ class RecipeDetail extends StatelessWidget {
 
         /// The top app bar with title
         appBar: AppBar(
-          title: Text(recipeTitle),
+          title: Text(widget.recipeTitle),
         ),
         body: Padding(
           padding: const EdgeInsets.all(5.0),
@@ -100,7 +92,27 @@ class RecipeDetail extends StatelessWidget {
                 Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      Text(_recipeIngredients),
+
+                      FutureBuilder<String>(
+                        future: futureFullRecipe,
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            String fullText = snapshot.data!;
+                            List<String> response = parseIngredientsAndDirections(fullText);
+                            return Text(
+                              response[0],
+                              style: TextStyle(fontSize: 12),
+                            );
+                          } else if (snapshot.hasError) {
+                            return Text("${snapshot.error}");
+                          }
+                          // By default, show a loading spinner.
+                          return CircularProgressIndicator();
+                        },
+                      )
+
+
+
                     ]
                 ),
               ]
@@ -115,7 +127,27 @@ class RecipeDetail extends StatelessWidget {
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
                   )
                 ),
-                Text(_recipeDirections)
+
+
+                FutureBuilder<String>(
+                  future: futureFullRecipe,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      String fullText = snapshot.data!;
+                      List<String> response = parseIngredientsAndDirections(fullText);
+                      return Text(
+                        response[1],
+                        style: TextStyle(fontSize: 12),
+                      );
+                    } else if (snapshot.hasError) {
+                      return Text("${snapshot.error}");
+                    }
+                    // By default, show a loading spinner.
+                    return CircularProgressIndicator();
+                  },
+                )
+
+
               ],
             ),
           ]),

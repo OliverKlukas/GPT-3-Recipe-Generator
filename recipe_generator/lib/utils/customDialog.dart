@@ -87,7 +87,7 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
                       child: TextButton(
                           onPressed: () {
                             Navigator.push(context, MaterialPageRoute(builder: (context) {
-                              return RecipeDetail(recipeTitle: widget.regularRecipeText);
+                              return RecipeDetailApp(recipeTitle: widget.regularRecipeText);
                             }));
                           },
                           child: Text(
