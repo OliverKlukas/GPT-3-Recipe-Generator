@@ -7,6 +7,19 @@ import 'package:recipe_generator/models/recipeModel.dart';
 import 'package:recipe_generator/utils/recipiesList.dart';
 
 class DiscoveryPage extends StatefulWidget {
+  // Recipe static dataset
+  List<Recipe> allRecipes = [
+    Recipe(name: "Spaghetti Bolognese", imageURL: ''),
+    Recipe(name: "Pancakes", imageURL: ''),
+    Recipe(name: "Chicken Curry",imageURL: ''),
+    Recipe(name: "Pizza Fungi", imageURL: ''),
+    Recipe(name: "Hamburger with Fries", imageURL: ''),
+    Recipe(name: "Cheese Cake", imageURL: ''),
+    Recipe(name: "Spaghetti Carbonara", imageURL: ''),
+    Recipe(name: "Cherry Pie", imageURL: ''),
+    Recipe(name: "Pasta Casserole", imageURL: ''),
+    Recipe(name: "Pizza Salami", imageURL: ''),
+  ];
 
   @override
   _DiscoveryPageState createState() => _DiscoveryPageState();
@@ -17,21 +30,6 @@ class _DiscoveryPageState extends State<DiscoveryPage> {
   // Editing controller for search
   TextEditingController editingController = TextEditingController();
 
-  // Recipe static dataset
-  List<Recipe> allRecipes = [
-    Recipe(name: "Spaghetti Bolognese", imageURL: ''),
-    Recipe(name: "Pancakes", imageURL: ''),
-    Recipe(name: "Indian Curry",imageURL: ''),
-    Recipe(name: "Pizza Fungi", imageURL: ''),
-    Recipe(name: "Hamburger", imageURL: ''),
-    Recipe(name: "Cheese Cake", imageURL: ''),
-    Recipe(name: "Spaghetti Bolognese", imageURL: ''),
-    Recipe(name: "Pancakes", imageURL: ''),
-    Recipe(name: "Indian Curry", imageURL: ''),
-    Recipe(name: "Pizza Fungi", imageURL: ''),
-    Recipe(name: "Hamburger",  imageURL: ''),
-    Recipe(name: "Cheese Cake",  imageURL: ''),
-  ];
 
   // Dynamic recipe list for search
   var dispRecipes = <Recipe>[];
@@ -41,15 +39,17 @@ class _DiscoveryPageState extends State<DiscoveryPage> {
 
   // Fetch images based on created names
   Future<List<Recipe>> getRecipes() async{
-    dispRecipes.forEach((element) async {
-      if(element.imageURL == ''){
-        element.imageURL = await fetchImageUrl(element.name);
-      }
-    });
-    allRecipes.forEach((element) async {
-      if(element.imageURL == ''){
-        element.imageURL = await fetchImageUrl(element.name);
-      }
+    setState(() {
+      dispRecipes.forEach((element) async {
+        if(element.imageURL == ''){
+          element.imageURL = await fetchImageUrl(element.name);
+        }
+      });
+      widget.allRecipes.forEach((element) async {
+        if(element.imageURL == ''){
+          element.imageURL = await fetchImageUrl(element.name);
+        }
+      });
     });
     return dispRecipes;
   }
@@ -58,13 +58,13 @@ class _DiscoveryPageState extends State<DiscoveryPage> {
   @override
   void initState() {
     super.initState();
-    dispRecipes.addAll(allRecipes);
+    dispRecipes.addAll(widget.allRecipes);
   }
 
   // Search functionality
   void filterSearchResults(String query) {
     List<Recipe> dummySearchList = <Recipe>[];
-    dummySearchList.addAll(allRecipes);
+    dummySearchList.addAll(widget.allRecipes);
     if(query.isNotEmpty) {
       List<Recipe> dummyListData = <Recipe>[];
       searchRecipeWithInput(query).then((futureRecipeTitle) {
@@ -75,6 +75,7 @@ class _DiscoveryPageState extends State<DiscoveryPage> {
                     name: futureRecipeTitle[i].toString(), imageURL: ""));
               };
               dispRecipes.clear();
+              widget.allRecipes.addAll(dummyListData);
               dispRecipes.addAll(dummyListData);
             }
           });
@@ -83,7 +84,7 @@ class _DiscoveryPageState extends State<DiscoveryPage> {
     } else {
       setState(() {
         dispRecipes.clear();
-        dispRecipes.addAll(allRecipes);
+        dispRecipes.addAll(widget.allRecipes);
       });
     }
   }
@@ -134,7 +135,7 @@ class _DiscoveryPageState extends State<DiscoveryPage> {
             Padding(
               padding: EdgeInsets.only(top: 16,left: 16,right: 16),
               child: TextField(
-                onChanged: (value) {
+                onSubmitted: (value) {
                   filterSearchResults(value);
                 },
                 controller: editingController,
