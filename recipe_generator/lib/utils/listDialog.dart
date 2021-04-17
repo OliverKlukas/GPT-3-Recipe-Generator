@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import 'package:recipe_generator/views/chat.dart';
 import 'package:recipe_generator/utils/constants.dart';
+import 'package:recipe_generator/views/recipeDetail.dart';
 
 class ListDialogBox extends StatefulWidget {
   String recipeName;
