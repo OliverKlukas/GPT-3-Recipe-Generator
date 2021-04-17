@@ -1,32 +1,28 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 
-import 'package:recipe_generator/chat.dart';
-import 'package:recipe_generator/recipe_service.dart';
-import 'constants.dart';
 import 'package:recipe_generator/views/recipeDetail.dart';
+import 'package:recipe_generator/chat.dart';
+import 'package:recipe_generator/utils/constants.dart';
 
-class InspirationApp extends StatefulWidget {
+class CustomDialogBox extends StatefulWidget {
+  Future<String> futureRecipeText;
+  String regularRecipeText;
+
+  CustomDialogBox({
+    Key? key,
+    required this.futureRecipeText,
+    required this.regularRecipeText
+  }) : super(key: key);
+
   @override
-  _InspirationAppState createState() => _InspirationAppState();
+  _CustomDialogBoxState createState() => _CustomDialogBoxState();
 }
 
-class _InspirationAppState extends State<InspirationApp> {
-  late Future<String> futureRecipeText;
-  String regularRecipeText = "";
-
-  Color _color = Colors.deepPurple;
-  BorderRadiusGeometry _borderRadius = BorderRadius.circular(250.0);
-
-  @override
-  void initState() {
-    super.initState();
-    futureRecipeText = fetchReliableRecipe();
-  }
-
+class _CustomDialogBoxState extends State<CustomDialogBox> {
   @override
   Widget build(BuildContext context) {
-
-    Dialog errorDialog = Dialog(
+    return Dialog(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(Constants.padding),
         ),
@@ -64,14 +60,14 @@ class _InspirationAppState extends State<InspirationApp> {
                   ),
                   Center(
                     child: FutureBuilder<String>(
-                      future: futureRecipeText,
+                      future: widget.futureRecipeText,
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
-                          regularRecipeText = snapshot.data!;
+                          widget.regularRecipeText = snapshot.data!;
                           return Text(
-                              snapshot.data!,
-                              style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
-                              textAlign: TextAlign.center,
+                            snapshot.data!,
+                            style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
+                            textAlign: TextAlign.center,
                           );
                         } else if (snapshot.hasError) {
                           return Text("${snapshot.error}");
@@ -91,7 +87,7 @@ class _InspirationAppState extends State<InspirationApp> {
                       child: TextButton(
                           onPressed: () {
                             Navigator.push(context, MaterialPageRoute(builder: (context) {
-                              return RecipeDetail(recipeTitle: regularRecipeText);
+                              return RecipeDetailApp(recipeTitle: widget.regularRecipeText);
                             }));
                           },
                           child: Text(
@@ -146,36 +142,5 @@ class _InspirationAppState extends State<InspirationApp> {
             ),
           ],
         ));
-
-    getRecipeAndShowDialog() {
-      setState(() {
-        futureRecipeText = fetchReliableRecipe();
-      });
-      showDialog(
-          context: context,
-          builder: (BuildContext context) => errorDialog);
-    }
-
-    return AnimatedContainer(
-        width: MediaQuery.of(context).size.width * 0.6,
-        height: MediaQuery.of(context).size.width * 0.6,
-        decoration: BoxDecoration(
-          color: _color,
-          borderRadius: _borderRadius,
-        ),
-        // Define how long the animation should take.
-        duration: Duration(seconds: 1),
-        // Provide an optional curve to make the animation feel smoother.
-        curve: Curves.fastOutSlowIn,
-        child: Center(
-            child: TextButton(
-          child: const Text(
-            'Feeling\nhungry\n🍔🍟',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-                fontWeight: FontWeight.bold, fontSize: 40, color: Colors.white),
-          ),
-          onPressed: getRecipeAndShowDialog,
-        )));
   }
 }

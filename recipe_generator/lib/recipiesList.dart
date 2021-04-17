@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'chat.dart';
-import 'constants.dart';
+import 'utils/constants.dart';
 
 class RecipesList extends StatefulWidget{
   String name;
@@ -14,20 +14,6 @@ class RecipesList extends StatefulWidget{
 class _RecipesListState extends State<RecipesList> {
   @override
   Widget build(BuildContext context) {
-    // set up the buttons
-    Widget backButton = TextButton(
-      child: Text("Back"),
-      onPressed: () {
-        Navigator.pop(context);
-      },
-    );
-
-    Widget okButton = TextButton(
-      child: Text("Ok"),
-      onPressed: () {
-        Navigator.pop(context);
-      },
-    );
 
     Dialog errorDialog = Dialog(
         shape: RoundedRectangleBorder(
