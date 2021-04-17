@@ -38,7 +38,7 @@ Future<String> fetchReliableRecipe() async {
 }
 
 // Find existing recipes
-Future<String> searchRecipe(String prompt, Object configuration) async {
+Future<List> searchRecipe(String prompt, Object configuration) async {
   var result = await http.post(
       Uri.parse("https://api.openai.com/v1/engines/ada/search"),
       headers: {
@@ -50,17 +50,29 @@ Future<String> searchRecipe(String prompt, Object configuration) async {
   );
   /// Decode the body and select the first choice
   var body = jsonDecode(result.body);
-  var text = body["data"][0]["text"];
-  return text;
+  var recipe_list = body["data"];
+  var title_list = [];
+  for (var i=0; i<recipe_list.length; i++) {
+    var text = recipe_list[i]["text"];
+    var titleIdx = text.indexOf('\n');
+    var title = text.substring(3, titleIdx);
+    var recipe = text.substring(titleIdx+1);
+    title_list.add(title);
+  }
+  /*var text = body["data"][0]["text"];
+  var titleIdx = text.indexOf('\n');
+  var title = text.substring(3, titleIdx);
+  var recipe = text.substring(titleIdx+1);*/
+  return title_list;
 }
 
-Future<String> searchRecipeWithInput() async {
-  String prompt = "pasta dough";
+Future<List> searchRecipeWithInput(String query) async {
+  String prompt = query;
   Object configuration = {
     "search_model": "ada",
     "query": prompt,
     //max_rerank=50,
     "file": "file-g2zuMmsXN6cQ8bLHAaSVg6On"
   };
-  return fetchRecipe(prompt, configuration);
+  return searchRecipe(prompt, configuration);
 }

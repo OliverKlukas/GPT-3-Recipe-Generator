@@ -32,11 +32,15 @@ class _DiscoveryPageState extends State<DiscoveryPage> {
   // Dynamic recipe list for search
   var dispRecipes = <Recipe>[];
 
+  // Search result
+  late Future<String> futureRecipeTitle;
+
   // Initialize recipes
   @override
   void initState() {
     dispRecipes.addAll(allRecipes);
     super.initState();
+    //futureRecipeTitle = searchRecipeWithInput("");
   }
 
   // Search functionality
@@ -45,15 +49,18 @@ class _DiscoveryPageState extends State<DiscoveryPage> {
     dummySearchList.addAll(allRecipes);
     if(query.isNotEmpty) {
       List<Recipe> dummyListData = <Recipe>[];
-      dummySearchList.forEach((item) {
-        if(item.contains(query)) {
-          dummyListData.add(item);
-        }
-      });
-      setState(() {
-        dispRecipes.clear();
-        dispRecipes.addAll(dummyListData);
-      });
+      searchRecipeWithInput(query).then((futureRecipeTitle) {
+          setState(() {
+            if (futureRecipeTitle is List) {
+              for (var i=0; i<futureRecipeTitle.length; i++) {
+                dummyListData.add(Recipe(
+                    name: futureRecipeTitle[i].toString(), imageURL: ""));
+              };
+              dispRecipes.clear();
+              dispRecipes.addAll(dummyListData);
+            }
+          });
+        });
       return;
     } else {
       setState(() {
