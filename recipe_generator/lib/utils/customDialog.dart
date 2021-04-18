@@ -26,22 +26,12 @@ class CustomDialogBox extends StatefulWidget {
 }
 
 class _CustomDialogBoxState extends State<CustomDialogBox> {
-  String tmpText = "";
-  void _fetchImage() {
-    Future.wait([widget.futureRecipeText]).then((value) => {
-        setState(() {
-          tmpText = value[0];
-        }),
-        localImageFetch()
+  Future<String> imageUrl() async {
+    String tmpText = "";
+    await Future.wait([widget.futureRecipeText]).then((values) => {
+      tmpText = values[0]
     });
-  }
-
-  Future<String> localImageFetch() async {
-    String url = await fetchImageUrl(tmpText);
-    setState(() {
-      widget.regularRecipeURL = url;
-    });
-    return url;
+    return await fetchImageUrl(tmpText);
   }
 
   @override
@@ -161,9 +151,19 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
                 child: ClipRRect(
                     borderRadius: BorderRadius.all(
                         Radius.circular(Constants.avatarRadius)),
-                    child:
-                      Image.network(widget.regularRecipeURL),
-              )),
+                    child: FutureBuilder<String>(
+                        future: imageUrl(),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            return Image.network(snapshot.data!);
+                          } else if (snapshot.hasError) {
+                              return Text("${snapshot.error}");
+                          }
+                          return CircularProgressIndicator();
+                        },
+                    ),
+                ),//
+              ),
             ),
           ],
         ));
