@@ -63,31 +63,52 @@ class _DiscoveryPageState extends State<DiscoveryPage> {
 
   // Search functionality
   Future<void> filterSearchResults(String query) async {
-    List<Recipe> dummySearchList = <Recipe>[];
-    dummySearchList.addAll(widget.allRecipes);
     if(query.isNotEmpty) {
-      List<Recipe> dummyListData = <Recipe>[];
-      print(fetchTitlesByPreference(query));
-      searchRecipeWithInput(query).then((futureRecipeTitle) {
-          setState(() async {
-            if (futureRecipeTitle is List) {
-              for (var i=0; i<futureRecipeTitle.length; i++) {
-                dummyListData.add(Recipe(
-                    name: futureRecipeTitle[i].toString(), imageURL: await fetchImageUrl(futureRecipeTitle[i].toString())));
-              };
-              widget.dispRecipes.clear();
-              widget.allRecipes.addAll(dummyListData);
-              widget.dispRecipes.addAll(dummyListData);
+      fetchTitlesByPreference(query).then((genRecipes) {
+        setState(() async {
+          // List cleaning
+          List<String> sRecipeList = genRecipes.split('\n');
+          sRecipeList.removeLast();
+          for (var i=0; i<sRecipeList.length; i++) {
+            if(i > 0) {
+              sRecipeList[i] = sRecipeList[i].substring(3);
             }
-            // Search all existing data
-            //widget.allRecipes.forEach((item) {
-            //  if(item.contains(query)) {
-            //    widget.dispRecipes.add(item);
-            //  }
-            //});
-            widget.dispRecipes = await getRecipeImages();
+          }
+          List<Recipe> recipeList = [];
+          for (var i=0; i<sRecipeList.length; i++) {
+            recipeList.add(
+                Recipe(name: sRecipeList[i], imageURL: "")
+            );
+          }
+          widget.dispRecipes.clear();
+          widget.allRecipes.forEach((item) {
+            if(item.contains(query)) {
+              widget.dispRecipes.add(item);
+            }
+          });
+
+          // Update the display
+          widget.allRecipes.addAll(recipeList);
+          widget.dispRecipes.addAll(recipeList);
+          widget.dispRecipes = await getRecipeImages();
+
+          // Searching
+          searchRecipeWithInput(query).then((futureRecipeTitle) {
+            List<Recipe> dummyListData = <Recipe>[];
+            setState(() async {
+              if (futureRecipeTitle is List) {
+                for (var i=0; i<futureRecipeTitle.length; i++) {
+                  dummyListData.add(Recipe(
+                      name: futureRecipeTitle[i].toString(), imageURL: await fetchImageUrl(futureRecipeTitle[i].toString())));
+                };
+                widget.allRecipes.addAll(dummyListData);
+                widget.dispRecipes.addAll(dummyListData);
+              }
+              widget.dispRecipes = await getRecipeImages();
+            });
           });
         });
+      });
     } else {
       setState(() async {
         widget.dispRecipes.clear();
