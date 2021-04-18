@@ -16,10 +16,14 @@ Future<String> fetchImageUrl(String recipeName) async {
   );
 
   // Fetch a photo
-  final photos = await client.search.photos(recipeName, page: 1, perPage: 1).goAndGet();
-
-  // URL
-  String url = photos.results[0].urls.regular.toString();
+  String url = "https://img.chefkoch-cdn.de/rezepte/807111184564987/bilder/668266/crop-960x720/spaghetti-bolognese.jpg"; // Standard image
+  try{
+    final photos = await client.search.photos(recipeName, page: 1, perPage: 1).goAndGet();
+    // URL
+    url = photos.results[0].urls.regular.toString();
+  } on Exception catch(e) {
+    print(e);
+  }
 
   // Close the client when it is done being used to clean up allocate resources
   client.close();
