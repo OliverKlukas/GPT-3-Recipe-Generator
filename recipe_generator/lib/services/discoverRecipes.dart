@@ -9,7 +9,7 @@ Future<String> fetchTitlesByPreference(String userPreference) async {
   String prompt = buildPrompt(userPreference);
   Object configuration = {
     "prompt": prompt,
-    "max_tokens": 128,
+    "max_tokens": 64,
     "temperature": 0.7,
     "top_p": 1.0,
     "frequency_penalty": 0.0,

@@ -22,7 +22,7 @@ Future<String> fetchImageUrl(String recipeName) async {
     // URL
     url = photos.results[0].urls.regular.toString();
   } on Exception catch(e) {
-    print(e);
+     print(e);
   }
 
   // Close the client when it is done being used to clean up allocate resources

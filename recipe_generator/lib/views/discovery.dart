@@ -61,74 +61,55 @@ class _DiscoveryPageState extends State<DiscoveryPage> {
     widget.dispRecipes.addAll(widget.allRecipes);
   }
 
-  // PART 2: Search query as user preference for new recipes by GPT-3
-  Future<List<Recipe>> searchPart2(String query) async {
-    // Receive GPT-3 generated string list with recipe names
-    String genRecipes = await fetchTitlesByPreference(query);
-
-    // Conversion to recipe list
-    List<String> sRecipeList = genRecipes.split('\n'); //TODO clean numbers
-    List<Recipe> recipeList = [];
-    for (var i=0; i<sRecipeList.length; i++) {
-      recipeList.add(
-          Recipe(name: sRecipeList[i], imageURL: await fetchImageUrl(sRecipeList[i]))
-      );
-    }
-
-    // return of recipe list with image urls
-    return recipeList;
-  }
-
-  // Part 3: Search query in existing recipes dataset via GPT-3
-  Future<List<Recipe>> searchPart3(String query) async {
-    List<Recipe> recipeList = [];
-
-    // Receive GPT-3 search result for query in dataset
-    List futureRecipeTitle = await searchRecipeWithInput(query);
-
-    // Parse search result into recipe list with images
-    if (futureRecipeTitle is List) {
-      for (var i=0; i<futureRecipeTitle.length; i++) {
-        recipeList.add(
-            Recipe(name: futureRecipeTitle[i].toString(), imageURL: await fetchImageUrl(futureRecipeTitle[i].toString())));
-      }
-    }
-
-    // return of recipe list with image urls
-    return recipeList;
-  }
-
   // Search functionality
   Future<void> filterSearchResults(String query) async {
     if(query.isNotEmpty) {
-      // List with all three part search results in it
-      List<Recipe> updateDispList = <Recipe>[];
+      fetchTitlesByPreference(query).then((genRecipes) {
+        setState(() async {
+          // List cleaning
+          List<String> sRecipeList = genRecipes.split('\n');
+          sRecipeList.removeLast();
+          for (var i=0; i<sRecipeList.length; i++) {
+            if(i > 0) {
+              sRecipeList[i] = sRecipeList[i].substring(3);
+            }
+          }
+          List<Recipe> recipeList = [];
+          for (var i=0; i<sRecipeList.length; i++) {
+            recipeList.add(
+                Recipe(name: sRecipeList[i], imageURL: "")
+            );
+          }
+          widget.dispRecipes.clear();
+          widget.allRecipes.forEach((item) {
+            if(item.contains(query)) {
+              widget.dispRecipes.add(item);
+            }
+          });
 
-      // PART 1: Search query in existing data
-      widget.allRecipes.forEach((item) {
-        if(item.contains(query)) {
-          updateDispList.add(item);
-        }
+          // Update the display
+          widget.allRecipes.addAll(recipeList);
+          widget.dispRecipes.addAll(recipeList);
+          widget.dispRecipes = await getRecipeImages();
+
+          // Searching
+          searchRecipeWithInput(query).then((futureRecipeTitle) {
+            List<Recipe> dummyListData = <Recipe>[];
+            setState(() async {
+              if (futureRecipeTitle is List) {
+                for (var i=0; i<futureRecipeTitle.length; i++) {
+                  dummyListData.add(Recipe(
+                      name: futureRecipeTitle[i].toString(), imageURL: await fetchImageUrl(futureRecipeTitle[i].toString())));
+                };
+                widget.allRecipes.addAll(dummyListData);
+                widget.dispRecipes.addAll(dummyListData);
+              }
+              widget.dispRecipes = await getRecipeImages();
+            });
+          });
+        });
       });
-
-      // PART 2: Search query as user preference for new recipes by GPT-3
-      List<Recipe> updateDispList2 = await searchPart2(query);
-      updateDispList.addAll(updateDispList2);
-
-      // Part 3: Search query in existing recipes dataset via GPT-3
-      updateDispList.addAll(await searchPart3(query));
-
-      // Add new recipes to the all time list
-      widget.allRecipes.addAll(updateDispList); // TODO use set conversion for duplicates
-
-      // Set the state with the results of all three part searches
-      widget.dispRecipes.clear();
-      setState(() {
-        widget.dispRecipes.addAll(updateDispList);
-      });
-    }
-    else {
-      // No query found -> display all existing recipes
+    } else {
       setState(() async {
         widget.dispRecipes.clear();
         widget.dispRecipes.addAll(widget.allRecipes);
