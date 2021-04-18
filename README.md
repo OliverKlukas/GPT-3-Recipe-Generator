@@ -21,11 +21,17 @@ Welcome to our Remy Cooking Assistant! To set up our application on your own dev
 5. Execute the main.dart file on your favourite emulator and enjoy our cooking companion Remy!
 6. Bon Appetit!
 
-## Prototype
+# Full Product at a glance
+![full_demo 2021-04-18 13_50_21](https://user-images.githubusercontent.com/36952951/115144601-d451f900-a04d-11eb-87c7-657687f690aa.gif)
+
+
+## Prototype (different features)
 
 https://user-images.githubusercontent.com/36952951/115143491-f5afe680-a047-11eb-9217-4509a1af6bf6.mov
 
 https://user-images.githubusercontent.com/36952951/115143497-fc3e5e00-a047-11eb-9a71-922b7f9602fd.mov
+
+https://user-images.githubusercontent.com/36952951/115144608-e3d14200-a04d-11eb-9d17-e1aecad91bab.mov
 
 ## GPT-3 Exemplary Usage
 
